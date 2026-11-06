@@ -159,20 +159,21 @@
     .menu-card i { font-size: 2.5rem; margin-bottom: 1rem; color: var(--accent-green); }
     .menu-card h3 { font-size: 1.5rem; margin-bottom: 0.5rem; }
 
-    .day-selector { display: flex; justify-content: center; gap: 0.8rem; margin-bottom: 2rem; flex-wrap: wrap; }
+    .day-selector { display: flex; justify-content: center; gap: 0.8rem; margin-bottom: 2rem; flex-wrap: wrap; align-items: center; }
     .day-btn {
       background: var(--card-bg); border: 1px solid var(--card-border); color: var(--text-muted);
       padding: 0.8rem 1.5rem; border-radius: 12px; font-weight: 700; cursor: pointer; transition: all 0.3s ease;
     }
     .day-btn.active, .day-btn:hover { background: var(--accent-green); color: #fff; border-color: var(--accent-green); }
 
-    .slots-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1.5rem; }
+    .slots-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem; }
     .slot-card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 16px; padding: 1.5rem; display: flex; flex-direction: column; gap: 1rem; }
     .slot-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--card-border); padding-bottom: 0.8rem; }
-    .slot-time { font-weight: 700; color: var(--accent-gold); }
-    .course-content { flex-grow: 1; display: flex; flex-direction: column; gap: 0.5rem; }
-    .course-display-title { font-size: 1.1rem; font-weight: 700; }
-    .course-display-room { font-size: 0.9rem; color: var(--accent-gold); }
+    .slot-time { font-weight: 700; color: var(--accent-gold); font-size: 1.1rem; }
+    
+    .course-item-box { background: rgba(0,0,0,0.2); border: 1px solid var(--card-border); border-radius: 12px; padding: 1rem; margin-bottom: 1rem; display: flex; flex-direction: column; gap: 0.6rem; }
+    .course-display-title { font-size: 1.1rem; font-weight: 700; color: #fff; }
+    .course-display-info { font-size: 0.9rem; color: var(--accent-gold); display: flex; gap: 1rem; flex-wrap: wrap; }
     .course-display-desc { font-size: 0.9rem; color: var(--text-muted); }
 
     .section-title { font-size: 1.8rem; margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.8rem; }
@@ -210,7 +211,6 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <link rel="manifest" href="./manifest.json">
   <link rel="apple-touch-icon" href="./apple-touch-icon.png">
-
 </head>
 <body>
 
@@ -317,13 +317,7 @@
     <div id="page-corsi" class="page">
       <h2 class="section-title"><i class="fa-solid fa-graduation-cap"></i> Programma Corsi & Attività</h2>
       
-      <div class="day-selector">
-        <button class="day-btn active" onclick="selectDay(1)">Giorno 1</button>
-        <button class="day-btn" onclick="selectDay(2)">Giorno 2</button>
-        <button class="day-btn" onclick="selectDay(3)">Giorno 3</button>
-        <button class="day-btn" onclick="selectDay(4)">Giorno 4</button>
-        <button class="day-btn" onclick="selectDay(5)">Giorno 5</button>
-      </div>
+      <div id="day-selector-container" class="day-selector"></div>
 
       <div id="slots-container" class="slots-grid"></div>
     </div>
@@ -351,7 +345,14 @@
     const teamsTriennio = ["3A", "3F", "3E", "3D", "3G", "3B", "4D", "4C", "4E", "4A", "4F", "5D", "5E", "5A", "5F"];
     const timeSlots = ["08:00 - 09:00", "09:00 - 10:00", "10:00 - 11:00", "11:00 - 12:00"];
 
-    let state = { biennio: [], triennio: [], corsi: {}, currentDay: 1 };
+    let state = { 
+      biennio: [], 
+      triennio: [], 
+      corsi: {}, 
+      giorniNomi: { 1: "Giorno 1", 2: "Giorno 2", 3: "Giorno 3", 4: "Mercoledì 22", 5: "Giorno 5" },
+      currentDay: 1 
+    };
+    
     let isAdmin = false;
     const ADMIN_PASSWORD = "noioltre2026";
 
@@ -393,6 +394,7 @@
         state.biennio = data.biennio || [];
         state.triennio = data.triennio || [];
         state.corsi = data.corsi || {};
+        if (data.giorniNomi) state.giorniNomi = data.giorniNomi;
       } else {
         saveData();
       }
@@ -400,7 +402,12 @@
     });
 
     async function saveData() {
-      await setDoc(docRef, { biennio: state.biennio, triennio: state.triennio, corsi: state.corsi });
+      await setDoc(docRef, { 
+        biennio: state.biennio, 
+        triennio: state.triennio, 
+        corsi: state.corsi,
+        giorniNomi: state.giorniNomi 
+      });
     }
 
     window.showPage = function(pageId) {
@@ -412,10 +419,13 @@
 
     window.selectDay = function(day) {
       state.currentDay = day;
-      document.querySelectorAll('.day-btn').forEach((b, idx) => {
-        b.classList.toggle('active', idx + 1 === day);
-      });
       renderCorsi();
+    };
+
+    window.updateDayName = function(day, newName) {
+      if (!isAdmin) return;
+      state.giorniNomi[day] = newName;
+      saveData();
     };
 
     function populateSelects() {
@@ -518,47 +528,106 @@
       saveData();
     };
 
-    function renderCorsi() {
-      const container = document.getElementById('slots-container');
-      const dayData = state.corsi[`day_${state.currentDay}`] || {};
-
-      container.innerHTML = timeSlots.map((slot, idx) => {
-        const item = dayData[idx] || { title: '', room: '', desc: '' };
-        
-        if (!isAdmin) {
-          return `
-            <div class="slot-card">
-              <div class="slot-header"><span class="slot-time"><i class="fa-regular fa-clock"></i> ${slot}</span></div>
-              <div class="course-content">
-                <div class="course-display-title">${item.title || '<span style="color:var(--text-muted); font-weight:normal;">Nessun corso programmato</span>'}</div>
-                ${item.room ? `<div class="course-display-room"><i class="fa-solid fa-location-dot"></i> ${item.room}</div>` : ''}
-                ${item.desc ? `<div class="course-display-desc">${item.desc}</div>` : ''}
-              </div>
+    function renderDaySelector() {
+      const container = document.getElementById('day-selector-container');
+      let html = '';
+      for (let d = 1; d <= 5; d++) {
+        const name = state.giorniNomi[d] || `Giorno ${d}`;
+        const activeClass = state.currentDay === d ? 'active' : '';
+        if (isAdmin) {
+          html += `
+            <div style="display:flex; flex-direction:column; align-items:center; gap:0.2rem;">
+              <input type="text" class="form-control" style="width:130px; text-align:center; font-weight:bold;" value="${name}" onchange="updateDayName(${d}, this.value)">
+              <button class="day-btn ${activeClass}" style="width:100%; padding:0.4rem;" onclick="selectDay(${d})">Seleziona</button>
             </div>
           `;
         } else {
-          return `
-            <div class="slot-card">
-              <div class="slot-header"><span class="slot-time"><i class="fa-regular fa-clock"></i> ${slot}</span></div>
-              <div class="course-content">
-                <input type="text" class="form-control" style="margin-bottom:0.5rem; font-weight:bold;" placeholder="Titolo Corso" value="${item.title}" onchange="updateCorso(${idx}, 'title', this.value)">
-                <input type="text" class="form-control" style="margin-bottom:0.5rem;" placeholder="Aula / Relatore" value="${item.room}" onchange="updateCorso(${idx}, 'room', this.value)">
-                <textarea class="form-control" placeholder="Descrizione del corso" onchange="updateCorso(${idx}, 'desc', this.value)">${item.desc}</textarea>
-              </div>
-            </div>
-          `;
+          html += `<button class="day-btn ${activeClass}" onclick="selectDay(${d})">${name}</button>`;
         }
+      }
+      container.innerHTML = html;
+    }
+
+    function renderCorsi() {
+      renderDaySelector();
+      const container = document.getElementById('slots-container');
+      const dayData = state.corsi[`day_${state.currentDay}`] || {};
+
+      container.innerHTML = timeSlots.map((slot, slotIdx) => {
+        const activities = dayData[slotIdx] || [];
+
+        let activitiesHtml = '';
+        if (activities.length === 0) {
+          activitiesHtml = `<p style="color:var(--text-muted); font-size:0.9rem;">Nessuna attività programmata.</p>`;
+        } else {
+          activitiesHtml = activities.map((item, actIdx) => {
+            if (!isAdmin) {
+              return `
+                <div class="course-item-box">
+                  <div class="course-display-title">${item.title || 'Attività senza titolo'}</div>
+                  <div class="course-display-info">
+                    <span><i class="fa-solid fa-location-dot"></i> ${item.room || 'Aula non specificata'}</span>
+                    <span><i class="fa-solid fa-chalkboard-user"></i> ${item.prof || 'Prof. non specificato'}</span>
+                  </div>
+                  ${item.desc ? `<div class="course-display-desc">${item.desc}</div>` : ''}
+                </div>
+              `;
+            } else {
+              return `
+                <div class="course-item-box">
+                  <input type="text" class="form-control" style="font-weight:bold; margin-bottom:0.3rem;" placeholder="Titolo Attività" value="${item.title || ''}" onchange="updateCorsoField(${slotIdx}, ${actIdx}, 'title', this.value)">
+                  <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; margin-bottom:0.3rem;">
+                    <input type="text" class="form-control" placeholder="Posto / Aula" value="${item.room || ''}" onchange="updateCorsoField(${slotIdx}, ${actIdx}, 'room', this.value)">
+                    <input type="text" class="form-control" placeholder="Professore / Relatore" value="${item.prof || ''}" onchange="updateCorsoField(${slotIdx}, ${actIdx}, 'prof', this.value)">
+                  </div>
+                  <textarea class="form-control" placeholder="Descrizione" style="margin-bottom:0.5rem;" onchange="updateCorsoField(${slotIdx}, ${actIdx}, 'desc', this.value)">${item.desc || ''}</textarea>
+                  <button class="btn-action btn-delete" style="padding:0.4rem 0.8rem; font-size:0.8rem; align-self:flex-start;" onclick="removeCorsoActivity(${slotIdx}, ${actIdx})"><i class="fa-solid fa-trash"></i> Elimina attività</button>
+                </div>
+              `;
+            }
+          }).join('');
+        }
+
+        let addBtnHtml = isAdmin ? `<button class="btn-action" style="margin-top:0.5rem; font-size:0.85rem; padding:0.5rem 0.8rem;" onclick="addCorsoActivity(${slotIdx})"><i class="fa-solid fa-plus"></i> Aggiungi altra attività in quest'ora</button>` : '';
+
+        return `
+          <div class="slot-card">
+            <div class="slot-header"><span class="slot-time"><i class="fa-regular fa-clock"></i> ${slot}</span></div>
+            <div class="course-content">
+              ${activitiesHtml}
+              ${addBtnHtml}
+            </div>
+          </div>
+        `;
       }).join('');
     }
 
-    window.updateCorso = function(slotIdx, field, val) {
+    window.addCorsoActivity = function(slotIdx) {
       if (!isAdmin) return;
       const dayKey = `day_${state.currentDay}`;
       if (!state.corsi[dayKey]) state.corsi[dayKey] = {};
-      if (!state.corsi[dayKey][slotIdx]) state.corsi[dayKey][slotIdx] = { title: '', room: '', desc: '' };
+      if (!state.corsi[dayKey][slotIdx]) state.corsi[dayKey][slotIdx] = [];
 
-      state.corsi[dayKey][slotIdx][field] = val;
+      state.corsi[dayKey][slotIdx].push({ title: '', room: '', prof: '', desc: '' });
       saveData();
+    };
+
+    window.removeCorsoActivity = function(slotIdx, actIdx) {
+      if (!isAdmin) return;
+      const dayKey = `day_${state.currentDay}`;
+      if (state.corsi[dayKey] && state.corsi[dayKey][slotIdx]) {
+        state.corsi[dayKey][slotIdx].splice(actIdx, 1);
+        saveData();
+      }
+    };
+
+    window.updateCorsoField = function(slotIdx, actIdx, field, val) {
+      if (!isAdmin) return;
+      const dayKey = `day_${state.currentDay}`;
+      if (state.corsi[dayKey] && state.corsi[dayKey][slotIdx] && state.corsi[dayKey][slotIdx][actIdx]) {
+        state.corsi[dayKey][slotIdx][actIdx][field] = val;
+        saveData();
+      }
     };
 
     function renderAll() {
