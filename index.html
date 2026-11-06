@@ -186,63 +186,73 @@
       font-size: 1.15rem;
       line-height: 1.6;
       max-width: 750px;
-      margin: 0 auto 1.8rem auto;
+      margin: 0 auto;
       color: #e2e8f0;
       font-style: italic;
       font-weight: 300;
     }
 
-    /* NUOVO COUNTDOWN DESIGN */
-    .countdown-wrapper {
-      background: rgba(11, 15, 25, 0.6);
-      border: 1px solid rgba(16, 185, 129, 0.3);
-      border-radius: 16px;
-      padding: 1.2rem;
-      max-width: 500px;
-      margin: 0 auto;
-      box-shadow: inset 0 0 15px rgba(16, 185, 129, 0.05);
+    /* PRIMO STILE DEL COUNTDOWN (SEPARATO DALLA FRASE) */
+    .countdown-section {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 20px;
+      padding: 2rem 1.5rem;
+      margin-bottom: 2rem;
+      text-align: center;
+      box-shadow: 0 15px 35px rgba(0,0,0,0.4);
+      backdrop-filter: blur(10px);
     }
+
     .countdown-title {
-      font-size: 0.8rem;
-      color: var(--accent-green);
-      font-weight: 700;
+      font-size: 1.1rem;
+      color: var(--accent-gold);
       text-transform: uppercase;
-      letter-spacing: 1.5px;
-      margin-bottom: 0.8rem;
+      font-weight: 700;
+      letter-spacing: 2px;
+      margin-bottom: 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.6rem;
     }
+
     .countdown-container {
       display: flex;
       justify-content: center;
-      align-items: center;
-      gap: 0.6rem;
+      gap: 1rem;
+      flex-wrap: wrap;
     }
+
     .countdown-box {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      min-width: 60px;
+      background: rgba(0, 0, 0, 0.4);
+      border: 1px solid var(--card-border);
+      border-radius: 16px;
+      padding: 1rem 1.4rem;
+      min-width: 85px;
+      text-align: center;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+      transition: transform 0.3s ease;
     }
+    .countdown-box:hover {
+      transform: translateY(-3px);
+      border-color: rgba(245, 158, 11, 0.4);
+    }
+
     .countdown-number {
-      font-size: 1.6rem;
+      font-size: 2rem;
       font-weight: 900;
-      color: #fff;
-      background: linear-gradient(180deg, #ffffff 0%, #cbd5e1 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
+      color: var(--accent-gold);
       line-height: 1;
     }
+
     .countdown-label {
-      font-size: 0.7rem;
+      font-size: 0.75rem;
       color: var(--text-muted);
       text-transform: uppercase;
-      margin-top: 0.3rem;
+      margin-top: 0.4rem;
       font-weight: 600;
-    }
-    .countdown-divider {
-      font-size: 1.4rem;
-      font-weight: 900;
-      color: var(--accent-green);
-      margin-top: -0.8rem;
+      letter-spacing: 1px;
     }
 
     .social-section-title {
@@ -486,20 +496,29 @@
         <p class="hero-quote">
           "Mettici la passione, fai la differenza. La cogestione è il nostro momento per fare squadra e andare Oltre."
         </p>
+      </div>
 
-        <!-- COUNTDOWN STREAMLINED DESIGN -->
-        <div class="countdown-wrapper">
-          <div class="countdown-title"><i class="fa-solid fa-stopwatch"></i> Inizio Cogestione</div>
-          <div class="countdown-container">
-            <div class="countdown-box"><div id="cd-days" class="countdown-number">00</div><div class="countdown-label">Giorni</div></div>
-            <div class="countdown-divider">:</div>
-            <div class="countdown-box"><div id="cd-hours" class="countdown-number">00</div><div class="countdown-label">Ore</div></div>
-            <div class="countdown-divider">:</div>
-            <div class="countdown-box"><div id="cd-mins" class="countdown-number">00</div><div class="countdown-label">Minuti</div></div>
-            <div class="countdown-divider">:</div>
-            <div class="countdown-box"><div id="cd-secs" class="countdown-number">00</div><div class="countdown-label">Secondi</div></div>
+      <!-- SEZIONE COUNTDOWN SEPARATA -->
+      <div class="countdown-section">
+        <div class="countdown-title"><i class="fa-solid fa-stopwatch"></i> Inizio Cogestione</div>
+        <div class="countdown-container">
+          <div class="countdown-box"><div id="cd-days" class="countdown-number">00</div><div class="countdown-label">Giorni</div></div>
+          <div class="countdown-box"><div id="cd-hours" class="countdown-number">00</div><div class="countdown-label">Ore</div></div>
+          <div class="countdown-box"><div id="cd-mins" class="countdown-number">00</div><div class="countdown-label">Minuti</div></div>
+          <div class="countdown-box"><div id="cd-secs" class="countdown-number">00</div><div class="countdown-label">Secondi</div></div>
+        </div>
+      </div>
+
+      <!-- FORM ADMIN PER MODIFICARE LA DATA DEL COUNTDOWN -->
+      <div id="form-countdown-box" class="form-container">
+        <h3>Modifica Data Inizio Cogestione</h3>
+        <div class="form-grid">
+          <div class="form-group" style="grid-column: 1 / -1;">
+            <label>Data e Ora Inizio Evento</label>
+            <input type="datetime-local" id="admin-target-date" class="form-control" onchange="updateTargetDate(this.value)">
           </div>
         </div>
+        <p style="font-size: 0.8rem; color: var(--accent-gold); margin-top: 0.5rem;">Ricordati di cliccare su "Salva" in alto per rendere effettiva la modifica per tutti!</p>
       </div>
 
       <div class="social-section-title">I Nostri Canali Ufficiali</div>
@@ -655,25 +674,27 @@
       corsi: {}, 
       allday: {}, 
       giorniNomi: { 1: "Giorno 1", 2: "Giorno 2", 3: "Giorno 3", 4: "Mercoledì 22", 5: "Giorno 5" },
-      currentDay: 1 
+      currentDay: 1,
+      targetDate: "2026-05-20T08:00"
     };
     
     let previousStandings = { biennio: {}, triennio: {} };
     let isAdmin = false;
     const ADMIN_PASSWORD = "noioltre2026";
 
+    // COUNTDOWN LOGIC
     function startCountdown() {
-      const eventDate = new Date("May 20, 2026 08:00:00").getTime();
-      
       setInterval(() => {
+        const eventDate = new Date(state.targetDate).getTime();
         const now = new Date().getTime();
         const distance = eventDate - now;
 
         if (distance < 0) {
-          document.getElementById("cd-days").innerText = "00";
-          document.getElementById("cd-hours").innerText = "00";
-          document.getElementById("cd-mins").innerText = "00";
-          document.getElementById("cd-secs").innerText = "00";
+          const els = ["cd-days", "cd-hours", "cd-mins", "cd-secs"];
+          els.forEach(id => {
+            const el = document.getElementById(id);
+            if (el) el.innerText = "00";
+          });
           return;
         }
 
@@ -682,13 +703,23 @@
         const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
         const seconds = Math.floor((distance % (1000 * 60)) / 1000);
 
-        document.getElementById("cd-days").innerText = String(days).padStart(2, '0');
-        document.getElementById("cd-hours").innerText = String(hours).padStart(2, '0');
-        document.getElementById("cd-mins").innerText = String(minutes).padStart(2, '0');
-        document.getElementById("cd-secs").innerText = String(seconds).padStart(2, '0');
+        const dEl = document.getElementById("cd-days");
+        const hEl = document.getElementById("cd-hours");
+        const mEl = document.getElementById("cd-mins");
+        const sEl = document.getElementById("cd-secs");
+
+        if (dEl) dEl.innerText = String(days).padStart(2, '0');
+        if (hEl) hEl.innerText = String(hours).padStart(2, '0');
+        if (mEl) mEl.innerText = String(minutes).padStart(2, '0');
+        if (sEl) sEl.innerText = String(seconds).padStart(2, '0');
       }, 1000);
     }
     startCountdown();
+
+    window.updateTargetDate = function(val) {
+      if (!isAdmin) return;
+      state.targetDate = val;
+    };
 
     window.showPage = function(pageId) {
       document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
@@ -725,6 +756,10 @@
     function updateAdminUI() {
       const btn = document.getElementById('admin-btn');
       const saveBtn = document.getElementById('save-cloud-btn');
+      const dateInput = document.getElementById('admin-target-date');
+      
+      if (dateInput) dateInput.value = state.targetDate;
+
       if (isAdmin) {
         btn.innerHTML = `<i class="fa-solid fa-lock-open"></i> Admin`;
         btn.classList.add('logged-in');
@@ -750,6 +785,10 @@
         state.corsi = data.corsi || {};
         state.allday = data.allday || {};
         if (data.giorniNomi) state.giorniNomi = data.giorniNomi;
+        if (data.targetDate) state.targetDate = data.targetDate;
+        
+        const dateInput = document.getElementById('admin-target-date');
+        if (dateInput) dateInput.value = state.targetDate;
       } else {
         saveDataSilent();
       }
@@ -764,7 +803,8 @@
         bracketTriennio: state.bracketTriennio,
         corsi: state.corsi,
         allday: state.allday,
-        giorniNomi: state.giorniNomi 
+        giorniNomi: state.giorniNomi,
+        targetDate: state.targetDate
       });
     }
 
