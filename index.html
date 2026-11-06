@@ -36,7 +36,6 @@
       overflow-x: hidden;
     }
 
-    /* Effetto speciale: sfere fluttuanti di sfondo */
     .bg-glow-1, .bg-glow-2 {
       position: absolute;
       width: 300px;
@@ -157,7 +156,6 @@
       to { opacity: 1; transform: translateY(0); }
     }
 
-    /* SEZIONE HERO HOME PAGE */
     .hero {
       text-align: center;
       padding: 3.5rem 2rem;
@@ -195,7 +193,6 @@
       font-weight: 300;
     }
 
-    /* NUOVE SCHEDE SOCIAL ED EFFETTI */
     .social-section-title {
       text-align: center;
       font-size: 1.1rem;
@@ -257,7 +254,6 @@
     }
     .social-card:hover .social-icon-wrapper { transform: scale(1.1) rotate(-5deg); }
 
-    /* Stili specifici per ciascun link */
     .social-card.instagram:hover { border-color: #e1306c; box-shadow: 0 10px 30px rgba(225, 48, 108, 0.3); }
     .social-card.instagram .social-icon-wrapper { background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%); color: #fff; }
 
@@ -272,7 +268,6 @@
     .social-arrow { margin-left: auto; color: var(--text-muted); font-size: 1.1rem; transition: transform 0.3s ease; }
     .social-card:hover .social-arrow { transform: translateX(5px); color: #fff; }
 
-    /* CORSI & TABELLE */
     .day-selector { display: flex; justify-content: center; gap: 0.8rem; margin-bottom: 2rem; flex-wrap: wrap; align-items: center; }
     .day-btn {
       background: var(--card-bg); border: 1px solid var(--card-border); color: var(--text-muted);
@@ -499,15 +494,27 @@
     };
     
     let isAdmin = false;
-    const ADMIN_PASSWORD = "noioltre2026";
 
-    window.toggleAdmin = function() {
+    // Hash SHA-256 generato per la password 'noioltre2026'
+    const ADMIN_HASH = "8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918";
+
+    async function hashString(string) {
+      const msgBuffer = new TextEncoder().encode(string);
+      const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
+      const hashArray = Array.from(new Uint8Array(hashBuffer));
+      return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+    }
+
+    window.toggleAdmin = async function() {
       if (!isAdmin) {
         const pass = prompt("Inserisci la password Admin:");
-        if (pass === ADMIN_PASSWORD) {
+        if (pass === null) return;
+        
+        const hashedInput = await hashString(pass);
+        if (hashedInput === ADMIN_HASH) {
           isAdmin = true;
           alert("Accesso Admin consentito! Ora puoi programmare partite, inserire risultati e cliccare su 'Salva Modifiche'.");
-        } else if (pass !== null) {
+        } else {
           alert("Password errata!");
           return;
         }
