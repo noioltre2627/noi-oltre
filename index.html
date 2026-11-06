@@ -318,4 +318,622 @@
     }
     .score-input:focus { outline: none; border-color: var(--accent-green); }
     .btn-action { 
-      background: var(--accent-green);
+      background: var(--accent-green); color: #fff; border: none; padding: 0.5rem 0.9rem; border-radius: 8px; font-weight: 600; cursor: pointer; 
+      transition: opacity 0.2s ease, transform 0.2s ease; 
+    }
+    .btn-action:active { transform: scale(0.95); }
+    .btn-action:hover { opacity: 0.9; }
+    .btn-delete { background: var(--accent-red); }
+
+    .form-container { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 16px; padding: 1.2rem; margin-top: 1.2rem; display: none; }
+    .form-container.admin-visible { display: block; animation: fadeInUp 0.4s ease; }
+    .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 0.8rem; margin-bottom: 0.8rem; }
+    .form-group { display: flex; flex-direction: column; gap: 0.3rem; }
+    .form-group label { font-size: 0.8rem; color: var(--text-muted); }
+    .form-control { background: rgba(0, 0, 0, 0.3); border: 1px solid var(--card-border); border-radius: 8px; padding: 0.6rem; color: #fff; font-size: 0.9rem; transition: border-color 0.3s ease; }
+    .form-control:focus { outline: none; border-color: var(--accent-green); }
+
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+
+  <meta name="theme-color" content="#0b0f19">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <link rel="manifest" href="./manifest.json">
+  <link rel="apple-touch-icon" href="./apple-touch-icon.png">
+</head>
+<body>
+
+  <div class="bg-glow-1"></div>
+  <div class="bg-glow-2"></div>
+
+  <header>
+    <div class="brand">
+      <img src="IMG_1149.JPG" alt="NOI OLTRE Logo" class="brand-logo-img">
+      <div class="brand-title">NOI OLTRE</div>
+    </div>
+    <div class="header-right">
+      <nav>
+        <button class="nav-btn active" onclick="showPage('home')"><i class="fa-solid fa-house"></i> Home</button>
+        <button class="nav-btn" onclick="showPage('biennio')"><i class="fa-solid fa-trophy"></i> Biennio</button>
+        <button class="nav-btn" onclick="showPage('triennio')"><i class="fa-solid fa-award"></i> Triennio</button>
+        <button class="nav-btn" onclick="showPage('corsi')"><i class="fa-solid fa-calendar-days"></i> Corsi</button>
+      </nav>
+      <div class="admin-controls">
+        <button id="save-cloud-btn" class="save-cloud-btn" onclick="manualSaveData()"><i class="fa-solid fa-cloud-arrow-up"></i> Salva</button>
+        <button id="admin-btn" class="admin-toggle-btn" onclick="toggleAdmin()"><i class="fa-solid fa-lock"></i> Admin</button>
+      </div>
+    </div>
+  </header>
+
+  <div class="container">
+    
+    <!-- HOME PAGE -->
+    <div id="page-home" class="page active">
+      <div class="hero">
+        <img src="IMG_1149.JPG" alt="NOI OLTRE Logo" class="hero-logo-large">
+        <p class="hero-quote">
+          "Mettici la passione, fai la differenza. La cogestione è il nostro momento per fare squadra e andare Oltre."
+        </p>
+      </div>
+
+      <div class="social-section-title">I Nostri Canali Ufficiali</div>
+
+      <div class="social-cards">
+        <a href="https://www.instagram.com/noi__oltre?utm_source=ig_web_button_share_sheet&cplk=ZDNlZDc0MzIxNw==" target="_blank" class="social-card instagram">
+          <div class="social-icon-wrapper">
+            <i class="fa-brands fa-instagram"></i>
+          </div>
+          <div class="social-info">
+            <h4>Instagram</h4>
+            <p>@noi__oltre</p>
+          </div>
+          <i class="fa-solid fa-arrow-right social-arrow"></i>
+        </a>
+
+        <a href="https://www.tiktok.com/@noi_oltre?is_from_webapp=1&sender_device=pc" target="_blank" class="social-card tiktok">
+          <div class="social-icon-wrapper">
+            <i class="fa-brands fa-tiktok"></i>
+          </div>
+          <div class="social-info">
+            <h4>TikTok</h4>
+            <p>@noi_oltre</p>
+          </div>
+          <i class="fa-solid fa-arrow-right social-arrow"></i>
+        </a>
+
+        <a href="https://www.iistommasosalvini.edu.it/" target="_blank" class="social-card school">
+          <div class="social-icon-wrapper">
+            <i class="fa-solid fa-school"></i>
+          </div>
+          <div class="social-info">
+            <h4>Sito Scuola</h4>
+            <p>IIS Tommaso Salvini</p>
+          </div>
+          <i class="fa-solid fa-arrow-right social-arrow"></i>
+        </a>
+      </div>
+    </div>
+
+    <!-- BIENNIO PAGE -->
+    <div id="page-biennio" class="page">
+      <h2 class="section-title"><i class="fa-solid fa-trophy"></i> Classifica Biennio</h2>
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th>#</th><th>Squadra</th><th>PT</th><th>PG</th><th>V</th><th>P</th><th>S</th><th>GF</th><th>GS</th><th>DR</th>
+            </tr>
+          </thead>
+          <tbody id="table-biennio"></tbody>
+        </table>
+      </div>
+
+      <h2 class="section-title"><i class="fa-solid fa-calendar"></i> Partite Biennio</h2>
+      <div id="matches-biennio" class="matches-list"></div>
+
+      <div id="form-biennio-box" class="form-container">
+        <h3>Programma Nuova Partita</h3>
+        <div class="form-grid">
+          <div class="form-group"><label>Squadra Casa</label><select id="biennio-home" class="form-control"></select></div>
+          <div class="form-group"><label>Squadra Trasferta</label><select id="biennio-away" class="form-control"></select></div>
+          <div class="form-group"><label>Seleziona Giorno</label><input type="date" id="biennio-date" class="form-control"></div>
+          <div class="form-group"><label>Orario</label><input type="text" id="biennio-time" class="form-control" placeholder="Es. 10:00"></div>
+        </div>
+        <button class="btn-action" onclick="addMatch('biennio')">Aggiungi Partita</button>
+      </div>
+    </div>
+
+    <!-- TRIENNIO PAGE -->
+    <div id="page-triennio" class="page">
+      <h2 class="section-title"><i class="fa-solid fa-award"></i> Classifica Triennio</h2>
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th>#</th><th>Squadra</th><th>PT</th><th>PG</th><th>V</th><th>P</th><th>S</th><th>GF</th><th>GS</th><th>DR</th>
+            </tr>
+          </thead>
+          <tbody id="table-triennio"></tbody>
+        </table>
+      </div>
+
+      <h2 class="section-title"><i class="fa-solid fa-calendar"></i> Partite Triennio</h2>
+      <div id="matches-triennio" class="matches-list"></div>
+
+      <div id="form-triennio-box" class="form-container">
+        <h3>Programma Nuova Partita</h3>
+        <div class="form-grid">
+          <div class="form-group"><label>Squadra Casa</label><select id="triennio-home" class="form-control"></select></div>
+          <div class="form-group"><label>Squadra Trasferta</label><select id="triennio-away" class="form-control"></select></div>
+          <div class="form-group"><label>Seleziona Giorno</label><input type="date" id="triennio-date" class="form-control"></div>
+          <div class="form-group"><label>Orario</label><input type="text" id="triennio-time" class="form-control" placeholder="Es. 11:30"></div>
+        </div>
+        <button class="btn-action" onclick="addMatch('triennio')">Aggiungi Partita</button>
+      </div>
+    </div>
+
+    <!-- CORSI PAGE -->
+    <div id="page-corsi" class="page">
+      <h2 class="section-title"><i class="fa-solid fa-graduation-cap"></i> Programma Corsi</h2>
+      
+      <div id="day-selector-container" class="day-selector"></div>
+
+      <div id="all-day-container" style="margin-bottom: 1.5rem;"></div>
+
+      <div id="slots-container" class="slots-grid"></div>
+    </div>
+
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+    import { getFirestore, doc, onSnapshot, setDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyDSEr-lge9gW1UdNdtytPaqOq6tiW7vZN4",
+      authDomain: "cogestione-polo-tecnologico.firebaseapp.com",
+      projectId: "cogestione-polo-tecnologico",
+      storageBucket: "cogestione-polo-tecnologico.firebasestorage.app",
+      messagingSenderId: "988177710470",
+      appId: "1:988177710470:web:d0e09a4b2e42ac4aed4007",
+      measurementId: "G-8T0LD2PMXE"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    const teamsBiennio = ["1E", "1D", "1B", "1F", "2A", "2E", "2F", "2D", "2B"];
+    const teamsTriennio = ["3A", "3F", "3E", "3D", "3G", "3B", "4D", "4C", "4E", "4A", "4F", "5D", "5E", "5A", "5F"];
+    const timeSlots = ["08:00 - 09:00", "09:00 - 10:00", "10:00 - 11:00", "11:00 - 12:00"];
+
+    let state = { 
+      biennio: [], 
+      triennio: [], 
+      corsi: {}, 
+      allday: {}, 
+      giorniNomi: { 1: "Giorno 1", 2: "Giorno 2", 3: "Giorno 3", 4: "Mercoledì 22", 5: "Giorno 5" },
+      currentDay: 1 
+    };
+    
+    let isAdmin = false;
+    const ADMIN_PASSWORD = "noioltre2026";
+
+    window.toggleAdmin = function() {
+      if (!isAdmin) {
+        const pass = prompt("Inserisci la password Admin:");
+        if (pass === ADMIN_PASSWORD) {
+          isAdmin = true;
+          alert("Accesso Admin consentito!");
+        } else if (pass !== null) {
+          alert("Password errata!");
+          return;
+        }
+      } else {
+        isAdmin = false;
+        alert("Sei uscito dalla modalità Admin.");
+      }
+      updateAdminUI();
+    };
+
+    function updateAdminUI() {
+      const btn = document.getElementById('admin-btn');
+      const saveBtn = document.getElementById('save-cloud-btn');
+      if (isAdmin) {
+        btn.innerHTML = `<i class="fa-solid fa-lock-open"></i> Admin`;
+        btn.classList.add('logged-in');
+        saveBtn.classList.add('admin-visible');
+        document.querySelectorAll('.form-container').forEach(el => el.classList.add('admin-visible'));
+      } else {
+        btn.innerHTML = `<i class="fa-solid fa-lock"></i> Admin`;
+        btn.classList.remove('logged-in');
+        saveBtn.classList.remove('admin-visible');
+        document.querySelectorAll('.form-container').forEach(el => el.classList.remove('admin-visible'));
+      }
+      renderAll();
+    }
+
+    const docRef = doc(db, "torneo", "data");
+    onSnapshot(docRef, (snapshot) => {
+      if (snapshot.exists()) {
+        const data = snapshot.data();
+        state.biennio = data.biennio || [];
+        state.triennio = data.triennio || [];
+        state.corsi = data.corsi || {};
+        state.allday = data.allday || {};
+        if (data.giorniNomi) state.giorniNomi = data.giorniNomi;
+      } else {
+        saveDataSilent();
+      }
+      renderAll();
+    });
+
+    async function saveDataSilent() {
+      await setDoc(docRef, { 
+        biennio: state.biennio, 
+        triennio: state.triennio, 
+        corsi: state.corsi,
+        allday: state.allday,
+        giorniNomi: state.giorniNomi 
+      });
+    }
+
+    window.manualSaveData = async function() {
+      if (!isAdmin) return;
+      try {
+        await saveDataSilent();
+        alert("Modifiche salvate con successo online!");
+      } catch (e) {
+        alert("Errore durante il salvataggio.");
+      }
+    };
+
+    window.showPage = function(pageId) {
+      document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+      document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+      document.getElementById(`page-${pageId}`).classList.add('active');
+      event.currentTarget?.classList.add('active');
+    };
+
+    window.selectDay = function(day) {
+      state.currentDay = day;
+      renderCorsi();
+    };
+
+    window.updateDayName = function(day, newName) {
+      if (!isAdmin) return;
+      state.giorniNomi[day] = newName;
+    };
+
+    function populateSelects() {
+      const bHome = document.getElementById('biennio-home');
+      const bAway = document.getElementById('biennio-away');
+      const tHome = document.getElementById('triennio-home');
+      const tAway = document.getElementById('triennio-away');
+
+      bHome.innerHTML = teamsBiennio.map(t => `<option value="${t}">${t}</option>`).join('');
+      bAway.innerHTML = teamsBiennio.map(t => `<option value="${t}">${t}</option>`).join('');
+      tHome.innerHTML = teamsTriennio.map(t => `<option value="${t}">${t}</option>`).join('');
+      tAway.innerHTML = teamsTriennio.map(t => `<option value="${t}">${t}</option>`).join('');
+    }
+
+    function calculateStandings(teams, matches) {
+      const standings = {};
+      teams.forEach(t => {
+        standings[t] = { name: t, pts: 0, p: 0, v: 0, n: 0, s: 0, gf: 0, gs: 0, dr: 0 };
+      });
+
+      matches.forEach(m => {
+        if (m.hScore !== null && m.aScore !== null && m.hScore !== "" && m.aScore !== "") {
+          const hs = parseInt(m.hScore);
+          const as = parseInt(m.aScore);
+          const h = standings[m.home];
+          const a = standings[m.away];
+
+          if (h && a) {
+            h.p++; a.p++;
+            h.gf += hs; h.gs += as;
+            a.gf += as; a.gs += hs;
+            h.dr = h.gf - h.gs;
+            a.dr = a.gf - a.gs;
+
+            if (hs > as) { h.pts += 3; h.v++; a.s++; }
+            else if (as > hs) { a.pts += 3; a.v++; h.s++; }
+            else { h.pts += 1; a.pts += 1; h.n++; a.n++; }
+          }
+        }
+      });
+
+      return Object.values(standings).sort((a, b) => b.pts - a.pts || b.dr - a.dr || b.gf - a.gf);
+    }
+
+    function renderStandings(teams, matches, containerId) {
+      const data = calculateStandings(teams, matches);
+      const tbody = document.getElementById(containerId);
+      tbody.innerHTML = data.map((t, idx) => `
+        <tr>
+          <td>${idx + 1}</td>
+          <td class="team-name">${t.name}</td>
+          <td><strong>${t.pts}</strong></td>
+          <td>${t.p}</td><td>${t.v}</td><td>${t.n}</td><td>${t.s}</td>
+          <td>${t.gf}</td><td>${t.gs}</td><td>${t.dr > 0 ? '+' + t.dr : t.dr}</td>
+        </tr>
+      `).join('');
+    }
+
+    function renderMatches(type) {
+      const list = state[type];
+      const container = document.getElementById(`matches-${type}`);
+      if (list.length === 0) {
+        container.innerHTML = `<p style="color:var(--text-muted); font-size:0.9rem; text-align:center; padding:1.2rem;">Nessuna partita in programma.</p>`;
+        return;
+      }
+      container.innerHTML = list.map((m, idx) => `
+        <div class="match-card">
+          <div class="match-info-side">
+            <span><i class="fa-regular fa-calendar"></i> ${m.date || 'Da definire'}</span>
+            <span><i class="fa-regular fa-clock"></i> ${m.time || 'Da definire'}</span>
+          </div>
+          <div class="match-teams">
+            <span>${m.home}</span>
+            <div class="match-score-inputs">
+              <input type="number" class="score-input" value="${m.hScore ?? ''}" ${isAdmin ? '' : 'disabled'} onchange="updateScore('${type}', ${idx}, 'hScore', this.value)">
+              <span>-</span>
+              <input type="number" class="score-input" value="${m.aScore ?? ''}" ${isAdmin ? '' : 'disabled'} onchange="updateScore('${type}', ${idx}, 'aScore', this.value)">
+            </div>
+            <span>${m.away}</span>
+          </div>
+          ${isAdmin ? `<button class="btn-action btn-delete" onclick="deleteMatch('${type}', ${idx})"><i class="fa-solid fa-trash"></i></button>` : ''}
+        </div>
+      `).join('');
+    }
+
+    window.addMatch = function(type) {
+      if (!isAdmin) return;
+      const home = document.getElementById(`${type}-home`).value;
+      const away = document.getElementById(`${type}-away`).value;
+      const date = document.getElementById(`${type}-date`).value;
+      const time = document.getElementById(`${type}-time`).value;
+
+      if (home === away) { alert("Una squadra non può giocare contro se stessa!"); return; }
+
+      state[type].push({ home, away, date, time, hScore: null, aScore: null });
+      renderMatches(type);
+      renderStandings(teamsBiennio, state.biennio, 'table-biennio');
+      renderStandings(teamsTriennio, state.triennio, 'table-triennio');
+      alert("Partita aggiunta!");
+    };
+
+    window.updateScore = function(type, idx, key, val) {
+      if (!isAdmin) return;
+      state[type][idx][key] = val === "" ? null : parseInt(val);
+      renderStandings(teamsBiennio, state.biennio, 'table-biennio');
+      renderStandings(teamsTriennio, state.triennio, 'table-triennio');
+    };
+
+    window.deleteMatch = function(type, idx) {
+      if (!isAdmin) return;
+      state[type].splice(idx, 1);
+      renderMatches(type);
+      renderStandings(teamsBiennio, state.biennio, 'table-biennio');
+      renderStandings(teamsTriennio, state.triennio, 'table-triennio');
+    };
+
+    function renderDaySelector() {
+      const container = document.getElementById('day-selector-container');
+      let html = '';
+      for (let d = 1; d <= 5; d++) {
+        const name = state.giorniNomi[d] || `Giorno ${d}`;
+        const activeClass = state.currentDay === d ? 'active' : '';
+        if (isAdmin) {
+          html += `
+            <div style="display:flex; flex-direction:column; align-items:center; gap:0.3rem;">
+              <input type="text" class="form-control" style="width:120px; text-align:center; font-weight:bold;" value="${name}" onchange="updateDayName(${d}, this.value)">
+              <button class="day-btn ${activeClass}" style="width:100%; padding:0.4rem;" onclick="selectDay(${d})">Seleziona</button>
+            </div>
+          `;
+        } else {
+          html += `<button class="day-btn ${activeClass}" onclick="selectDay(${d})">${name}</button>`;
+        }
+      }
+      container.innerHTML = html;
+    }
+
+    function renderCorsi() {
+      renderDaySelector();
+      
+      const dayKey = `day_${state.currentDay}`;
+      const allDayContainer = document.getElementById('all-day-container');
+      const allDayEvents = state.allday[dayKey] || [];
+      const visibleAllDayEvents = allDayEvents.filter(ev => isAdmin || !ev.secret);
+
+      if (visibleAllDayEvents.length > 0 || isAdmin) {
+        let allDayHtml = `<h3 style="font-size:1.1rem; margin-bottom:0.6rem; color:var(--accent-gold);"><i class="fa-solid fa-star"></i> Eventi Speciali</h3>`;
+        
+        visibleAllDayEvents.forEach((item, actIdx) => {
+          const originalIdx = allDayEvents.indexOf(item);
+          const secretBadge = item.secret ? `<span class="secret-badge"><i class="fa-solid fa-eye-slash"></i> Segreto</span>` : '';
+          
+          if (!isAdmin) {
+            allDayHtml += `
+              <div class="course-item-box ${item.secret ? 'secret-item' : ''}">
+                <div class="course-display-title">${item.title || 'Evento'}</div>
+                <div class="course-display-info">
+                  <span><i class="fa-solid fa-location-dot"></i> ${item.room || 'Zona non specificata'}</span>
+                  <span><i class="fa-solid fa-clock"></i> Tutto il giorno</span>
+                </div>
+                ${item.desc ? `<div class="course-display-desc">${item.desc}</div>` : ''}
+              </div>
+            `;
+          } else {
+            allDayHtml += `
+              <div class="course-item-box ${item.secret ? 'secret-item' : ''}">
+                ${secretBadge}
+                <input type="text" class="form-control" style="font-weight:bold; margin-bottom:0.3rem;" placeholder="Titolo Evento" value="${item.title || ''}" onchange="updateAllDayField(${originalIdx}, 'title', this.value)">
+                <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; margin-bottom:0.3rem;">
+                  <input type="text" class="form-control" placeholder="Posto / Aula" value="${item.room || ''}" onchange="updateAllDayField(${originalIdx}, 'room', this.value)">
+                  <label style="display:flex; align-items:center; gap:0.4rem; font-size:0.8rem; color:var(--accent-gold); cursor:pointer;">
+                    <input type="checkbox" ${item.secret ? 'checked' : ''} onchange="updateAllDayField(${originalIdx}, 'secret', this.checked)"> 
+                    Segreto
+                  </label>
+                </div>
+                <textarea class="form-control" placeholder="Descrizione" style="margin-bottom:0.5rem;" onchange="updateAllDayField(${originalIdx}, 'desc', this.value)">${item.desc || ''}</textarea>
+                <button class="btn-action btn-delete" style="padding:0.3rem 0.6rem; font-size:0.75rem; align-self:flex-start;" onclick="removeAllDayActivity(${originalIdx})"><i class="fa-solid fa-trash"></i> Elimina</button>
+              </div>
+            `;
+          }
+        });
+
+        if (isAdmin) {
+          allDayHtml += `<button class="btn-action" style="font-size:0.8rem; padding:0.4rem 0.7rem;" onclick="addAllDayActivity()"><i class="fa-solid fa-plus"></i> Aggiungi evento</button>`;
+        }
+
+        allDayContainer.innerHTML = allDayHtml;
+      } else {
+        allDayContainer.innerHTML = '';
+      }
+
+      const container = document.getElementById('slots-container');
+      const slotData = state.corsi[dayKey] || {};
+
+      container.innerHTML = timeSlots.map((slot, slotIdx) => {
+        let activities = slotData[slotIdx] || [];
+        activities = activities.filter(item => isAdmin || !item.secret);
+
+        let activitiesHtml = '';
+        if (activities.length === 0 && !isAdmin) {
+          activitiesHtml = `<p style="color:var(--text-muted); font-size:0.85rem;">Nessuna attività.</p>`;
+        } else {
+          const rawActivities = slotData[slotIdx] || [];
+          activitiesHtml = rawActivities.map((item, actIdx) => {
+            if (!isAdmin && item.secret) return '';
+
+            if (!isAdmin) {
+              return `
+                <div class="course-item-box">
+                  <div class="course-display-title">${item.title || 'Attività'}</div>
+                  <div class="course-display-info">
+                    <span><i class="fa-solid fa-location-dot"></i> ${item.room || 'Aula non specificata'}</span>
+                    <span><i class="fa-solid fa-chalkboard-user"></i> ${item.prof || 'Prof. non specificato'}</span>
+                  </div>
+                  ${item.desc ? `<div class="course-display-desc">${item.desc}</div>` : ''}
+                </div>
+              `;
+            } else {
+              const secretBadge = item.secret ? `<span class="secret-badge"><i class="fa-solid fa-eye-slash"></i> Segreto</span>` : '';
+              return `
+                <div class="course-item-box ${item.secret ? 'secret-item' : ''}">
+                  ${secretBadge}
+                  <input type="text" class="form-control" style="font-weight:bold; margin-bottom:0.3rem;" placeholder="Titolo" value="${item.title || ''}" onchange="updateCorsoField(${slotIdx}, ${actIdx}, 'title', this.value)">
+                  <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 0.4rem; margin-bottom:0.3rem;">
+                    <input type="text" class="form-control" placeholder="Aula" value="${item.room || ''}" onchange="updateCorsoField(${slotIdx}, ${actIdx}, 'room', this.value)">
+                    <input type="text" class="form-control" placeholder="Prof" value="${item.prof || ''}" onchange="updateCorsoField(${slotIdx}, ${actIdx}, 'prof', this.value)">
+                  </div>
+                  <div style="margin-bottom:0.4rem;">
+                    <label style="display:flex; align-items:center; gap:0.4rem; font-size:0.8rem; color:var(--accent-gold); cursor:pointer;">
+                      <input type="checkbox" ${item.secret ? 'checked' : ''} onchange="updateCorsoField(${slotIdx}, ${actIdx}, 'secret', this.checked)"> 
+                      Segreto
+                    </label>
+                  </div>
+                  <textarea class="form-control" placeholder="Descrizione" style="margin-bottom:0.4rem;" onchange="updateCorsoField(${slotIdx}, ${actIdx}, 'desc', this.value)">${item.desc || ''}</textarea>
+                  <button class="btn-action btn-delete" style="padding:0.3rem 0.6rem; font-size:0.75rem; align-self:flex-start;" onclick="removeCorsoActivity(${slotIdx}, ${actIdx})"><i class="fa-solid fa-trash"></i> Elimina</button>
+                </div>
+              `;
+            }
+          }).join('');
+        }
+
+        let addBtnHtml = isAdmin ? `<button class="btn-action" style="margin-top:0.4rem; font-size:0.8rem; padding:0.4rem 0.7rem;" onclick="addCorsoActivity(${slotIdx})"><i class="fa-solid fa-plus"></i> Aggiungi</button>` : '';
+
+        return `
+          <div class="slot-card">
+            <div class="slot-header"><span class="slot-time"><i class="fa-regular fa-clock"></i> ${slot}</span></div>
+            <div class="course-content">
+              ${activitiesHtml}
+              ${addBtnHtml}
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    window.addAllDayActivity = function() {
+      if (!isAdmin) return;
+      const dayKey = `day_${state.currentDay}`;
+      if (!state.allday[dayKey]) state.allday[dayKey] = [];
+      state.allday[dayKey].push({ title: '', room: '', desc: '', secret: false });
+      renderCorsi();
+    };
+
+    window.removeAllDayActivity = function(actIdx) {
+      if (!isAdmin) return;
+      const dayKey = `day_${state.currentDay}`;
+      if (state.allday[dayKey]) {
+        state.allday[dayKey].splice(actIdx, 1);
+        renderCorsi();
+      }
+    };
+
+    window.updateAllDayField = function(actIdx, field, val) {
+      if (!isAdmin) return;
+      const dayKey = `day_${state.currentDay}`;
+      if (state.allday[dayKey] && state.allday[dayKey][actIdx]) {
+        state.allday[dayKey][actIdx][field] = val;
+        renderCorsi();
+      }
+    };
+
+    window.addCorsoActivity = function(slotIdx) {
+      if (!isAdmin) return;
+      const dayKey = `day_${state.currentDay}`;
+      if (!state.corsi[dayKey]) state.corsi[dayKey] = {};
+      if (!state.corsi[dayKey][slotIdx]) state.corsi[dayKey][slotIdx] = [];
+
+      state.corsi[dayKey][slotIdx].push({ title: '', room: '', prof: '', desc: '', secret: false });
+      renderCorsi();
+    };
+
+    window.removeCorsoActivity = function(slotIdx, actIdx) {
+      if (!isAdmin) return;
+      const dayKey = `day_${state.currentDay}`;
+      if (state.corsi[dayKey] && state.corsi[dayKey][slotIdx]) {
+        state.corsi[dayKey][slotIdx].splice(actIdx, 1);
+        renderCorsi();
+      }
+    };
+
+    window.updateCorsoField = function(slotIdx, actIdx, field, val) {
+      if (!isAdmin) return;
+      const dayKey = `day_${state.currentDay}`;
+      if (state.corsi[dayKey] && state.corsi[dayKey][slotIdx] && state.corsi[dayKey][slotIdx][actIdx]) {
+        state.corsi[dayKey][slotIdx][actIdx][field] = val;
+        renderCorsi();
+      }
+    };
+
+    function renderAll() {
+      renderStandings(teamsBiennio, state.biennio, 'table-biennio');
+      renderStandings(teamsTriennio, state.triennio, 'table-triennio');
+      renderMatches('biennio');
+      renderMatches('triennio');
+      renderCorsi();
+    }
+
+    populateSelects();
+  </script>
+
+  <script>
+    if ("serviceWorker" in navigator) {
+      window.addEventListener("load", () => {
+        navigator.serviceWorker.register("./sw.js").catch(err => {
+          console.error("Service worker error:", err);
+        });
+      });
+    }
+  </script>
+
+</body>
+</html>
