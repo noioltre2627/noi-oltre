@@ -88,6 +88,8 @@
     .nav-btn:hover { color: var(--text-main); background: rgba(255, 255, 255, 0.05); }
     .nav-btn.active { color: #fff; background: rgba(16, 185, 129, 0.2); border-color: var(--accent-green); box-shadow: 0 0 12px rgba(16, 185, 129, 0.3); }
 
+    .admin-controls { display: flex; gap: 0.5rem; align-items: center; }
+
     .admin-toggle-btn {
       background: rgba(245, 158, 11, 0.15);
       border: 1px solid var(--accent-gold);
@@ -102,6 +104,28 @@
       gap: 0.5rem;
     }
     .admin-toggle-btn.logged-in { background: rgba(16, 185, 129, 0.2); border-color: var(--accent-green); color: var(--accent-green); }
+
+    .save-cloud-btn {
+      background: var(--accent-green);
+      border: none;
+      color: #fff;
+      padding: 0.6rem 1.2rem;
+      border-radius: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      display: none;
+      align-items: center;
+      gap: 0.5rem;
+      box-shadow: 0 0 15px rgba(16, 185, 129, 0.4);
+      animation: pulseBtn 2s infinite;
+    }
+    .save-cloud-btn.admin-visible { display: flex; }
+
+    @keyframes pulseBtn {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.03); }
+      100% { transform: scale(1); }
+    }
 
     .container { max-width: 1200px; margin: 0 auto; padding: 2rem 1.5rem; }
     .page { display: none; animation: fadeIn 0.4s ease-in-out; }
@@ -226,7 +250,10 @@
         <button class="nav-btn" onclick="showPage('triennio')"><i class="fa-solid fa-award"></i> Triennio</button>
         <button class="nav-btn" onclick="showPage('corsi')"><i class="fa-solid fa-calendar-days"></i> Corsi</button>
       </nav>
-      <button id="admin-btn" class="admin-toggle-btn" onclick="toggleAdmin()"><i class="fa-solid fa-lock"></i> Area Admin</button>
+      <div class="admin-controls">
+        <button id="save-cloud-btn" class="save-cloud-btn" onclick="manualSaveData()"><i class="fa-solid fa-cloud-arrow-up"></i> Salva Modifiche</button>
+        <button id="admin-btn" class="admin-toggle-btn" onclick="toggleAdmin()"><i class="fa-solid fa-lock"></i> Area Admin</button>
+      </div>
     </div>
   </header>
 
@@ -361,7 +388,7 @@
         const pass = prompt("Inserisci la password Admin:");
         if (pass === ADMIN_PASSWORD) {
           isAdmin = true;
-          alert("Accesso Admin consentito!");
+          alert("Accesso Admin consentito! Ora puoi fare le modifiche e cliccare su 'Salva Modifiche'.");
         } else if (pass !== null) {
           alert("Password errata!");
           return;
@@ -375,13 +402,16 @@
 
     function updateAdminUI() {
       const btn = document.getElementById('admin-btn');
+      const saveBtn = document.getElementById('save-cloud-btn');
       if (isAdmin) {
         btn.innerHTML = `<i class="fa-solid fa-lock-open"></i> Admin Attivo`;
         btn.classList.add('logged-in');
+        saveBtn.classList.add('admin-visible');
         document.querySelectorAll('.form-container').forEach(el => el.classList.add('admin-visible'));
       } else {
         btn.innerHTML = `<i class="fa-solid fa-lock"></i> Area Admin`;
         btn.classList.remove('logged-in');
+        saveBtn.classList.remove('admin-visible');
         document.querySelectorAll('.form-container').forEach(el => el.classList.remove('admin-visible'));
       }
       renderAll();
@@ -396,12 +426,12 @@
         state.corsi = data.corsi || {};
         if (data.giorniNomi) state.giorniNomi = data.giorniNomi;
       } else {
-        saveData();
+        saveDataSilent();
       }
       renderAll();
     });
 
-    async function saveData() {
+    async function saveDataSilent() {
       await setDoc(docRef, { 
         biennio: state.biennio, 
         triennio: state.triennio, 
@@ -409,6 +439,16 @@
         giorniNomi: state.giorniNomi 
       });
     }
+
+    window.manualSaveData = async function() {
+      if (!isAdmin) return;
+      try {
+        await saveDataSilent();
+        alert("Modifiche salvate con successo online!");
+      } catch (e) {
+        alert("Errore durante il salvataggio. Controlla la connessione.");
+      }
+    };
 
     window.showPage = function(pageId) {
       document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
@@ -425,7 +465,6 @@
     window.updateDayName = function(day, newName) {
       if (!isAdmin) return;
       state.giorniNomi[day] = newName;
-      saveData();
     };
 
     function populateSelects() {
@@ -513,19 +552,25 @@
       if (home === away) { alert("Una squadra non può giocare contro se stessa!"); return; }
 
       state[type].push({ home, away, time, hScore: null, aScore: null });
-      saveData();
+      renderMatches(type);
+      renderStandings(teamsBiennio, state.biennio, 'table-biennio');
+      renderStandings(teamsTriennio, state.triennio, 'table-triennio');
+      alert("Partita aggiunta! Ricordati di cliccare su 'Salva Modifiche' in alto.");
     };
 
     window.updateScore = function(type, idx, key, val) {
       if (!isAdmin) return;
       state[type][idx][key] = val === "" ? null : parseInt(val);
-      saveData();
+      renderStandings(teamsBiennio, state.biennio, 'table-biennio');
+      renderStandings(teamsTriennio, state.triennio, 'table-triennio');
     };
 
     window.deleteMatch = function(type, idx) {
       if (!isAdmin) return;
       state[type].splice(idx, 1);
-      saveData();
+      renderMatches(type);
+      renderStandings(teamsBiennio, state.biennio, 'table-biennio');
+      renderStandings(teamsTriennio, state.triennio, 'table-triennio');
     };
 
     function renderDaySelector() {
@@ -609,7 +654,7 @@
       if (!state.corsi[dayKey][slotIdx]) state.corsi[dayKey][slotIdx] = [];
 
       state.corsi[dayKey][slotIdx].push({ title: '', room: '', prof: '', desc: '' });
-      saveData();
+      renderCorsi();
     };
 
     window.removeCorsoActivity = function(slotIdx, actIdx) {
@@ -617,7 +662,7 @@
       const dayKey = `day_${state.currentDay}`;
       if (state.corsi[dayKey] && state.corsi[dayKey][slotIdx]) {
         state.corsi[dayKey][slotIdx].splice(actIdx, 1);
-        saveData();
+        renderCorsi();
       }
     };
 
@@ -626,7 +671,6 @@
       const dayKey = `day_${state.currentDay}`;
       if (state.corsi[dayKey] && state.corsi[dayKey][slotIdx] && state.corsi[dayKey][slotIdx][actIdx]) {
         state.corsi[dayKey][slotIdx][actIdx][field] = val;
-        saveData();
       }
     };
 
