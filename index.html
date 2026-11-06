@@ -13,7 +13,7 @@
   <style>
     :root {
       --bg-dark: #0b0f19;
-      --card-bg: rgba(22, 30, 46, 0.7);
+      --card-bg: rgba(22, 30, 46, 0.75);
       --card-border: rgba(255, 255, 255, 0.1);
       --accent-green: #10b981;
       --accent-red: #ef4444;
@@ -38,15 +38,15 @@
 
     .bg-glow-1, .bg-glow-2 {
       position: absolute;
-      width: 300px;
-      height: 300px;
+      width: 350px;
+      height: 350px;
       border-radius: 50%;
-      filter: blur(90px);
+      filter: blur(100px);
       z-index: -1;
       pointer-events: none;
       animation: floatGlow 8s infinite alternate ease-in-out;
     }
-    .bg-glow-1 { top: 20%; left: -50px; background: rgba(16, 185, 129, 0.25); }
+    .bg-glow-1 { top: 15%; left: -50px; background: rgba(16, 185, 129, 0.25); }
     .bg-glow-2 { bottom: 10%; right: -50px; background: rgba(239, 68, 68, 0.25); animation-delay: -4s; }
 
     @keyframes floatGlow {
@@ -276,44 +276,53 @@
     .day-btn.active, .day-btn:hover { background: var(--accent-green); color: #fff; border-color: var(--accent-green); }
 
     .slots-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem; }
-    .slot-card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 16px; padding: 1.5rem; display: flex; flex-direction: column; gap: 1rem; }
+    .slot-card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 16px; padding: 1.5rem; display: flex; flex-direction: column; gap: 1rem; transition: transform 0.3s ease; }
+    .slot-card:hover { transform: translateY(-3px); border-color: rgba(255,255,255,0.2); }
     .slot-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--card-border); padding-bottom: 0.8rem; }
     .slot-time { font-weight: 700; color: var(--accent-gold); font-size: 1.1rem; }
     
-    .course-item-box { background: rgba(0,0,0,0.2); border: 1px solid var(--card-border); border-radius: 12px; padding: 1rem; margin-bottom: 1rem; display: flex; flex-direction: column; gap: 0.6rem; }
+    .course-item-box { background: rgba(0,0,0,0.2); border: 1px solid var(--card-border); border-radius: 12px; padding: 1rem; margin-bottom: 1rem; display: flex; flex-direction: column; gap: 0.6rem; transition: all 0.3s ease; }
+    .course-item-box:hover { border-color: var(--accent-green); }
     .course-display-title { font-size: 1.1rem; font-weight: 700; color: #fff; }
     .course-display-info { font-size: 0.9rem; color: var(--accent-gold); display: flex; gap: 1rem; flex-wrap: wrap; }
     .course-display-desc { font-size: 0.9rem; color: var(--text-muted); }
 
     .section-title { font-size: 1.8rem; margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.8rem; }
-    .table-container { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 16px; overflow-x: auto; margin-bottom: 2.5rem; }
+    .table-container { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 16px; overflow-x: auto; margin-bottom: 2.5rem; box-shadow: 0 10px 30px rgba(0,0,0,0.3); }
     table { width: 100%; border-collapse: collapse; text-align: left; }
-    th, td { padding: 1rem 1.2rem; border-bottom: 1px solid var(--card-border); }
+    th, td { padding: 1rem 1.2rem; border-bottom: 1px solid var(--card-border); transition: background 0.2s ease; }
     th { background: rgba(255, 255, 255, 0.03); color: var(--text-muted); font-weight: 600; font-size: 0.85rem; text-transform: uppercase; }
+    tbody tr:hover td { background: rgba(255, 255, 255, 0.03); }
     tr:last-child td { border-bottom: none; }
-    .team-name { font-weight: 700; }
+    .team-name { font-weight: 700; color: #a5f3fc; }
 
     .matches-list { display: grid; gap: 1rem; }
     .match-card {
       background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 16px;
       padding: 1.2rem; display: flex; justify-content: space-between; align-items: center; gap: 1rem; flex-wrap: wrap;
+      transition: all 0.3s ease;
     }
+    .match-card:hover { transform: translateY(-3px); border-color: rgba(16, 185, 129, 0.4); box-shadow: 0 8px 20px rgba(0,0,0,0.3); }
     .match-info-side { display: flex; flex-direction: column; gap: 0.2rem; font-size: 0.85rem; color: var(--accent-gold); font-weight: 600; }
     .match-teams { display: flex; align-items: center; gap: 1rem; font-size: 1.1rem; font-weight: 700; flex-grow: 1; justify-content: center; }
     .match-score-inputs { display: flex; align-items: center; gap: 0.5rem; }
     .score-input {
       width: 45px; height: 40px; background: rgba(0, 0, 0, 0.4); border: 1px solid var(--card-border);
       border-radius: 8px; color: #fff; text-align: center; font-size: 1.1rem; font-weight: 700;
+      transition: border-color 0.3s ease;
     }
-    .btn-action { background: var(--accent-green); color: #fff; border: none; padding: 0.6rem 1rem; border-radius: 8px; font-weight: 600; cursor: pointer; }
+    .score-input:focus { outline: none; border-color: var(--accent-green); }
+    .btn-action { background: var(--accent-green); color: #fff; border: none; padding: 0.6rem 1rem; border-radius: 8px; font-weight: 600; cursor: pointer; transition: opacity 0.2s ease, transform 0.2s ease; }
+    .btn-action:hover { opacity: 0.9; transform: scale(1.02); }
     .btn-delete { background: var(--accent-red); }
 
     .form-container { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 16px; padding: 1.5rem; margin-top: 1.5rem; display: none; }
-    .form-container.admin-visible { display: block; }
+    .form-container.admin-visible { display: block; animation: fadeIn 0.4s ease; }
     .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1rem; margin-bottom: 1rem; }
     .form-group { display: flex; flex-direction: column; gap: 0.4rem; }
     .form-group label { font-size: 0.85rem; color: var(--text-muted); }
-    .form-control { background: rgba(0, 0, 0, 0.3); border: 1px solid var(--card-border); border-radius: 8px; padding: 0.7rem; color: #fff; font-size: 0.95rem; }
+    .form-control { background: rgba(0, 0, 0, 0.3); border: 1px solid var(--card-border); border-radius: 8px; padding: 0.7rem; color: #fff; font-size: 0.95rem; transition: border-color 0.3s ease; }
+    .form-control:focus { outline: none; border-color: var(--accent-green); }
   </style>
 
   <meta name="theme-color" content="#0b0f19">
@@ -494,27 +503,15 @@
     };
     
     let isAdmin = false;
+    const ADMIN_PASSWORD = "noioltre2026";
 
-    // Hash SHA-256 generato per la password 'noioltre2026'
-    const ADMIN_HASH = "8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918";
-
-    async function hashString(string) {
-      const msgBuffer = new TextEncoder().encode(string);
-      const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
-      const hashArray = Array.from(new Uint8Array(hashBuffer));
-      return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
-    }
-
-    window.toggleAdmin = async function() {
+    window.toggleAdmin = function() {
       if (!isAdmin) {
         const pass = prompt("Inserisci la password Admin:");
-        if (pass === null) return;
-        
-        const hashedInput = await hashString(pass);
-        if (hashedInput === ADMIN_HASH) {
+        if (pass === ADMIN_PASSWORD) {
           isAdmin = true;
           alert("Accesso Admin consentito! Ora puoi programmare partite, inserire risultati e cliccare su 'Salva Modifiche'.");
-        } else {
+        } else if (pass !== null) {
           alert("Password errata!");
           return;
         }
@@ -652,7 +649,7 @@
       const list = state[type];
       const container = document.getElementById(`matches-${type}`);
       if (list.length === 0) {
-        container.innerHTML = `<p style="color:var(--text-muted); font-size:0.9rem; text-align:center; padding:1rem;">Nessuna partita in programma al momento.</p>`;
+        container.innerHTML = `<p style="color:var(--text-muted); font-size:0.9rem; text-align:center; padding:1.5rem;">Nessuna partita in programma al momento.</p>`;
         return;
       }
       container.innerHTML = list.map((m, idx) => `
@@ -714,9 +711,9 @@
         const activeClass = state.currentDay === d ? 'active' : '';
         if (isAdmin) {
           html += `
-            <div style="display:flex; flex-direction:column; align-items:center; gap:0.2rem;">
+            <div style="display:flex; flex-direction:column; align-items:center; gap:0.3rem;">
               <input type="text" class="form-control" style="width:130px; text-align:center; font-weight:bold;" value="${name}" onchange="updateDayName(${d}, this.value)">
-              <button class="day-btn ${activeClass}" style="width:100%; padding:0.4rem;" onclick="selectDay(${d})">Seleziona</button>
+              <button class="day-btn ${activeClass}" style="width:100%; padding:0.5rem;" onclick="selectDay(${d})">Seleziona</button>
             </div>
           `;
         } else {
