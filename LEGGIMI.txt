@@ -1,0 +1,21 @@
+NOI OLTRE - PWA
+
+CONTENUTO
+- index.html: pagina originale con i riferimenti PWA aggiunti
+- manifest.json: nome, colori e icone dell'app
+- sw.js: service worker e cache di base
+- icon-192.png, icon-512.png, apple-touch-icon.png: icone provvisorie NOI OLTRE
+
+COME PUBBLICCARE
+1. Carica TUTTI questi file nella stessa cartella del repository GitHub Pages.
+2. Aggiungi anche IMG_1149.JPG: il tuo HTML lo usa come logo dentro la pagina.
+3. Pubblica/aggiorna GitHub Pages e verifica che il sito si apra in HTTPS.
+4. iPhone: apri il link in Safari > Condividi > Aggiungi alla schermata Home.
+5. Android: apri il link in Chrome > menu ⋮ > Installa app (o Aggiungi a schermata Home).
+
+NOTA
+Le icone incluse sono provvisorie e create con le iniziali NO. Puoi sostituirle con il logo ufficiale mantenendo gli stessi nomi e dimensioni.
+La PWA non trasforma il sito in un'app da App Store/Play Store; consente l'installazione dalla pagina web.
+
+SICUREZZA IMPORTANTE
+Nel file HTML originale è presente una password Admin controllata nel browser. Chiunque può leggerla esaminando il codice. Non usare questa password per proteggere modifiche importanti: la protezione reale va configurata nelle regole Firebase/Firestore e con autenticazione lato server.
